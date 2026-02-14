@@ -1,22 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+<% layout("/layouts/boilerplate") %>
 <body>
     <h3>all listinhgs</h3>
-    <ul>
-         <% for(let listing of allListings){ %>
-            <li>
-<a href="/listings/<%=listing._id %>"><%= listing.title %></a>
-            </li>
+ <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+
+     <% for(let listing of allListings){ %>
+   <a href="\listings\<%=listing._id%>">
+     <div class="card col" style="width: 20rem;">
+  <img src="<%= listing.image.url %>" class="card-img-top" alt="listing" style="height: 20rem">
+  <div class="card-body">
+    <p class="card-text">
+       <b><%= listing.title %></b>
+       <br>
+    ₹ <%= listing.price.toLocaleString("en-IN") %>
+
+    </p>
+  </div>
+</div>
        <% } %>
-    </ul>
+ </div>
+   </a>
+   
 
     <form method="GET" action="/listings/new">
         <button>create new </button>
     </form>
 </body>
-</html>
