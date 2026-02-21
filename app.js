@@ -9,6 +9,7 @@ const methodOverride=require("method-override")
 const ejsMate = require("ejs-mate");
 const wrapAsync=require("./utils/wrapAsync.js");
 const ExpressError=require("./utils/ExpressError.js");
+const {ListingSchema, listingSchema}=require("./schema.js");
 const Mongo_url="mongodb://127.0.0.1:27017/wanderlust"
 main().then(()=>{
     console.log("connectes")
@@ -27,6 +28,17 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 
+const validateListing=(req,res,next)=>{
+    let {error}=listingSchema.validate(req.body);
+    if(error)
+    {
+        throw new ExpressError(400,result.error)
+    }
+    else
+    {
+    next() ;   
+    }
+}
 
 app.get("/listings",wrapAsync(async (req,res)=>{
    const allListings=await Listing.find({});
@@ -45,13 +57,9 @@ let {id}=req.params;
 }));
 //create
 
-app.post("/listings",wrapAsync(async(req,res)=>{
-    let listing=req.body.listing;
-    if(!listing)
-    {
-        throw new ExpressError(400,"invalid listing data")
-    }
-    const newListing= new Listing(listing);
+app.post("/listings",validateListing,wrapAsync(async(req,res)=>{
+
+    const newListing= new Listing(req.body. listing);
 await newListing.save();
 res.redirect("/listings")
 }))
@@ -61,8 +69,8 @@ app.get("/listings/:id/edit",wrapAsync(async (req,res)=>{
  const listing=await Listing.findById(id);
 res.render("listings/edit",{listing});
 }))
-
-app.put("/listings/:id",wrapAsync(async (req,res)=>{
+// update 
+app.put("/listings/:id",validateListing,wrapAsync(async (req,res)=>{
     let {id}=req.params;
  await Listing.findByIdAndUpdate(id,{...req.body.listing})
 
