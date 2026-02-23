@@ -116,7 +116,7 @@ object-fit: cover !important;
 
   /* new lis */
   .btn{
-    background-color: red;
+    background-color: rgb(139, 5, 5);
     border: none !important;
   }
 
@@ -129,5 +129,5 @@ object-fit: cover !important;
 
   /* show ejs */
   .btns{
-    display:flex;
+    display:flex !important;
   }
