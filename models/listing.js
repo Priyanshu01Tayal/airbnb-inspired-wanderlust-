@@ -1,34 +1,46 @@
-const mongoose=require("mongoose");
-const review = require("./review");
+const mongoose = require("mongoose");
+const Review = require("./review");
 
-const Schema=mongoose.Schema;
-const listingSchema=new Schema({
-    title:
-    {type:String,
-      required:true,
+const Schema = mongoose.Schema;
 
+const listingSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  description: String,
+
+  image: {
+    filename: {
+      type: String,
+      default: "listingimage",
     },
-    description:String,
-    image: {
-  filename: {
-    type: String,
-    default: "listingimage",
+    url: {
+      type: String,
+      default:
+        "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b",
+    },
   },
-  url: {
-    type: String,
-    default: "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b",
-  },
-},
-    price:Number,
-    location:String,
-    country:String,
-    reviews:[
-      {
-        type:Schema.Types.ObjectId,
-        ref:"Review",
-      },
-    ]
+
+  price: Number,
+  location: String,
+  country: String,
+
+  reviews: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Review",
+    },
+  ],
 });
 
-const Listing =mongoose.model("Listing",listingSchema);
-module.exports=  Listing;
+
+// ✅ Post Middleware (Delete associated reviews)
+listingSchema.post("findOneAndDelete", async (listing) => {
+  if (listing) {
+    await Review.deleteMany({ _id: { $in: listing.reviews } });
+  }
+});
+
+const Listing = mongoose.model("Listing", listingSchema);
+module.exports = Listing;
