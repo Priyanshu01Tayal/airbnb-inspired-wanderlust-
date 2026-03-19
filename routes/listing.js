@@ -26,10 +26,10 @@ router.get("/new",(req,res)=>{
 })
 // show route
 router.get("/:id",wrapAsync(async (req,res)=>{
-let {id}=req.params;
+ let {id}=req.params;
  const listing=await Listing.findById(id).populate("reviews");
  
- res.render("show",{listing})
+ res.render("listings/show",{listing});
 }));
 //create
 
