@@ -1,4 +1,4 @@
-<% layout("/layouts/boilerplate") %>
+<!-- <% layout("/layouts/boilerplate") %>
 <body>
   <%= success %>
     <h3>all listinhgs</h3>
@@ -26,4 +26,48 @@
     <form method="GET" action="/listings/new">
         <button>create new </button>
     </form>
+</body> -->
+
+
+
+<% layout("/layouts/boilerplate") %>
+
+<body>
+
+  <!-- Flash Messages -->
+  <%= success %>
+
+  <h3>All Listings</h3>
+
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+
+    <% for(let listing of allListings){ %>
+      <a href="/listings/<%= listing._id %>" class="listing-link">
+        
+        <div class="card col listing-card" style="width: 20rem;">
+
+          <!-- ✅ Image back -->
+          <img src="<%= listing.image.url %>" 
+               class="card-img-top" 
+               style="height: 20rem; object-fit: cover;">
+
+          <div class="card-body">
+            <p class="card-text">
+              <b><%= listing.title %></b>
+              <br>
+              ₹ <%= listing.price.toLocaleString("en-IN") %>
+            </p>
+          </div>
+
+        </div>
+
+      </a>
+    <% } %>
+
+  </div>
+
+  <form method="GET" action="/listings/new">
+    <button>Create New</button>
+  </form>
+
 </body>
