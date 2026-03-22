@@ -11,13 +11,22 @@ const wrapAsync=require("./utils/wrapAsync.js");
 const ExpressError=require("./utils/ExpressError.js");
 const session=require("express-session");
 const flash=require("connect-flash");
+const passport=require("passport");
+const passportLocalMongoose = require("passport-local-mongoose");
+const localStrategy=require("passport-local");
 
-
+const User=require("./models/user.js")
 
 const {ListingSchema, listingSchema,reviewSchema}=require("./schema.js");
 const Review=require("./models/review.js")
 const listings=require("./routes/listing.js")
 const reviews=require("./routes/review.js")
+const users=require("./routes/user.js")
+
+
+
+
+
 const Mongo_url="mongodb://127.0.0.1:27017/wanderlust"
 main().then(()=>{
     console.log("connectes")
@@ -35,6 +44,9 @@ app.use(express.urlencoded({extended:true}));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
+app.get("/",(req,res)=>{
+    res.send("connection succesful")
+})
 app.use(session({secret:"thisissecret",resave:false,saveUninitialized:true,
     cookie: {
         expires: Date.now() + 1000 * 60 * 60 * 24,
@@ -42,6 +54,12 @@ app.use(session({secret:"thisissecret",resave:false,saveUninitialized:true,
     }
 }));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 const validateReview = (req, res, next) => {
     const { error } = reviewSchema.validate(req.body);
 
@@ -58,17 +76,27 @@ app.use((req, res, next) => {
     
     next();
 });
+
+app.get("/fakeuser",async (req,res)=>{
+    let fakeuser=new User({
+        email:"fake@example.com",
+        username:"fakeuser"
+    })
+   let registerdUser= await User.register(fakeuser,"password");
+   res.send(registerdUser);
+});
+
+
 app.use("/listings", listings);
 app.use("/listings/:id/reviews",reviews);
+app.use("/",users);
 // indexx route
 
 // REVIEW
 
 
 
-app.get("/",(req,res)=>{
-    res.send("connection succesful")
-})
+
 
 
 
