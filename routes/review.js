@@ -6,15 +6,8 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const ExpressError = require("../utils/ExpressError.js");
 const { reviewSchema } = require("../schema.js");
 const Review = require("../models/review.js");
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
 
-    if (error) {
-        throw new ExpressError(400, error.message);
-    }
-
-    next();
-};
+const {validateReview}=require("../middleware.js")
 
 
 router.post("/", validateReview, wrapAsync(async (req,res)=>{
