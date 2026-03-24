@@ -29,7 +29,7 @@ router.get("/new",isLoggedIn,(req,res)=>{
 // show route
 router.get("/:id",wrapAsync(async (req,res)=>{
  let {id}=req.params;
- const listing=await Listing.findById(id).populate("reviews");
+ const listing=await Listing.findById(id).populate("reviews").populate("owner");
  if(!listing)
  {
      req.flash("error","Listing not found");
@@ -39,28 +39,31 @@ router.get("/:id",wrapAsync(async (req,res)=>{
 }));
 //create
 
-router.post("/",validateListing,wrapAsync(async(req,res)=>{
+router.post("/",isLoggedIn,validateListing,wrapAsync(async(req,res)=>{
 
     const newListing= new Listing(req.body. listing);
+    newListing.owner=req.user._id;
 await newListing.save();
+
+
 req.flash("success","Listing created successfully");
 res.redirect("/listings")
 }))
 
-router.get("/:id/edit",wrapAsync(async (req,res)=>{
+router.get("/:id/edit",isLoggedIn,wrapAsync(async (req,res)=>{
     let {id}=req.params;
  const listing=await Listing.findById(id);
 res.render("listings/edit",{listing});
 }))
 // update 
-router.put("/:id",validateListing,wrapAsync(async (req,res)=>{
+router.put("/:id",isLoggedIn,validateListing,wrapAsync(async (req,res)=>{
     let {id}=req.params;
  await Listing.findByIdAndUpdate(id,{...req.body.listing})
 req.flash("success","Listing updated successfully");
  res.redirect("/listings")
 }))
 //delete
-router.delete("/:id",wrapAsync(async (req,res)=>{
+router.delete("/:id",isLoggedIn,wrapAsync(async (req,res)=>{
     let {id}=req.params;
     let deletedListing=await Listing.findByIdAndDelete(id)
 req.flash("success","Listing deleted successfully");

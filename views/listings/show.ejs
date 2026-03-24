@@ -10,6 +10,7 @@
            class="card-img-top show-img" alt="Listing Image">
 
       <div class="card-body">
+      <p><i> OWNED BY <%= listing.owner.username%>  </i></p>
         <h5 class="card-title"><%= listing.title %></h5>
         <p class="card-text"><%= listing.description %></p>
         <p class="card-text">₹ <%= listing.price %></p>
@@ -19,6 +20,8 @@
     </div>
 
     <!-- Edit & Delete Buttons -->
+
+    <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
     <div class="mb-3">
       <a href="/listings/<%= listing._id %>/edit" 
          class="btn btn-dark">Edit</a>
@@ -29,7 +32,7 @@
         <button class="btn btn-danger">Delete</button>
       </form>
     </div>
-
+    <% } %>
     <hr>
 
     <!-- Review Form -->
