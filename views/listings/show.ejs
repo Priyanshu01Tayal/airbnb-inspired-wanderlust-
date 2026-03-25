@@ -36,7 +36,9 @@
     <hr>
 
     <!-- Review Form -->
+    
     <div class="mb-3">
+      <% if(currUser) { %>
       <h4>Leave a Review</h4>
 
       <form action="/listings/<%= listing._id %>/reviews" 
@@ -58,6 +60,7 @@
 
         <button class="btn btn-dark">Submit</button>
       </form>
+      <% } %> 
     </div>
 
     <hr>
