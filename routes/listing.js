@@ -7,60 +7,34 @@ const ExpressError=require("../utils/ExpressError.js");
 const Listing=require("../models/listing.js")
 const {isLoggedIn,isOwner,validateListing}=require("../middleware.js")
 
+const listingController=require("../controllers/listing.js")
+
+
 // indexx route
-router.get("/",wrapAsync(async (req,res)=>{
-   const allListings=await Listing.find({});
-   res.render("listings/index",{allListings});
-}));
+router.get("/",wrapAsync(listingController.index));
+
 // new route
-router.get("/new",isLoggedIn,(req,res)=>{
-    
-    res.render("listings/new")
-})
+router.get("/new",isLoggedIn,listingController.renderNewForm)
+
 // show route
-router.get("/:id",wrapAsync(async (req,res)=>{
- let {id}=req.params;
- const listing=await Listing.findById(id).populate("reviews").populate("owner");
- if(!listing)
- {
-     req.flash("error","Listing not found");
-     return res.redirect("/listings");
- }
- res.render("listings/show",{listing});
-}));
+router.get("/:id",wrapAsync(listingController.showListing));
+
 //create
 
-router.post("/",isLoggedIn,validateListing,wrapAsync(async(req,res)=>{
-
-    const newListing= new Listing(req.body. listing);
-    newListing.owner=req.user._id;
-await newListing.save();
+router.post("/",isLoggedIn,validateListing,wrapAsync(listingController.createListing))
 
 
-req.flash("success","Listing created successfully");
-res.redirect("/listings")
-}))
 
-router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(async (req,res)=>{
-    let {id}=req.params;
- const listing=await Listing.findById(id);
-res.render("listings/edit",{listing});
-}))
+// editt
+
+router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.renderEditForm))
+
+
+
 // update 
-router.put("/:id",isLoggedIn,isOwner,validateListing,wrapAsync(async (req,res)=>{
-    let {id}=req.params;
- await Listing.findByIdAndUpdate(id,{...req.body.listing})
-req.flash("success","Listing updated successfully");
- res.redirect("/listings")
-}))
+router.put("/:id",isLoggedIn,isOwner,validateListing,wrapAsync(listingController.updateListing))
 //delete
-router.delete("/:id",isLoggedIn,isOwner,wrapAsync(async (req,res)=>{
-    let {id}=req.params;
-    let deletedListing=await Listing.findByIdAndDelete(id)
-req.flash("success","Listing deleted successfully");
-    res.redirect("/listings");
-
-}))
+router.delete("/:id",isLoggedIn,isOwner,wrapAsync(listingController.destroyListing))
 
 
 module.exports=router;
