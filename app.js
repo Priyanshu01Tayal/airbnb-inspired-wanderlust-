@@ -1,3 +1,6 @@
+require('dotenv').config();
+console.log(process.env.SECRET);
+
 const express=require("express")
 const app=express();
 const mongoose=require("mongoose")
